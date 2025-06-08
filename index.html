@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#DAA520">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="./icon-192x192.png">
+  <title>Calendário de Eventos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding: 20px;
+      background: #DAA520;
+    }
+    .calendar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 20px;
+    }
+    .week {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .day {
+      width: 100px;
+      min-height: 100px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #ffffff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: relative;
+      text-align: center;
+      font-size: 0.9rem;
+      padding: 10px;
+    }
+    .day .number {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+    .event {
+      font-size: 0.75rem;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .day {
+        width: 90px;
+        min-height: 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+     <button id="installBtn" style="z-index: 1; display: none; position: fixed; bottom: 20px; right: 20px; background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+    📲 Instalar App
+  </button>
+
+  <div class="calendar-container">
+    <div class="calendar-header">
+      <button class="btn btn-secondary" onclick="changeMonth(-1)">Anterior</button>
+      <h3 id="monthYear"></h3>
+      <button class="btn btn-secondary" onclick="changeMonth(1)">Próximo</button>
+    </div>
+    <div class="week" id="calendarWeek"></div>
+  </div>
+
+  <script defer>
+     const eventos = {
+  "2025-04-18": { descricao:"Vigília - Casais", cor: "#FFD700"},
+  "2025-04-23": { descricao: "Cinema Mulheres", cor: "#FFD700" },
+  "2025-04-24": { descricao: "Oração Tabitas", cor: "#FFD700" },
+  "2025-04-25": { descricao: "Rede Homens", cor: "#FFD700" },
+
+  "2025-05-01": { descricao: "Piquenique Rede de Mulheres", cor: "#FFD700" },
+  "2025-05-29": { descricao: "Pré-conferência Tabitas", cor: "#FFD700" },
+
+  "2025-06-06": { descricao: "Reunião Liderança", cor: "#FFD700" },
+  "2025-06-13": { descricao: "Rede de homens", cor: "#FFD700" },
+  "2025-06-12": { descricao: "Dia dos Namorados ❤️", cor: "#FFD700" },
+  "2025-06-14": { descricao: "Festival Gourmet - Jovens", cor: "#FFD700" },
+  "2025-06-18": { descricao: "Pré-Encontro", cor: "#FFD700" },
+  "2025-06-25": { descricao: "Pré-Encontro", cor: "#FFD700" },
+  "2025-06-21": { descricao: "Chá de Panela - Dani", cor: "#FFD700" },
+  "2025-06-28": { descricao: "Jantar Casais", cor: "#FFD700" },
+  "2025-06-27": { descricao: "Encontro com Deus", cor: "#FFD700" },
+  "2025-06-28": { descricao: "Encontro com Deus. Jantar Casais", cor: "#FFD700" },
+  "2025-06-29": { descricao: "Encontro com Deus", cor: "#FFD700" },
+
+  "2025-07-04": { descricao: "Rede de Mulheres", cor: "#FFD700" },
+  "2025-07-05": { descricao: "Festival Gourmet", cor: "#FFD700" },
+  "2025-07-05": { descricao: "Vigília Estadual", cor: "#FFD700" },
+  "2025-07-11": { descricao: "Reunião Liderança", cor: "#FFD700" },
+  "2025-07-19": { descricao: "Jejum Casais", cor: "#FFD700" },
+  "2025-07-25": { descricao: "Conferência Nacional Mulheres", cor: "#FFD700" },
+  "2025-07-26": { descricao: "Conferência Nacional Mulheres", cor: "#FFD700" },
+  "2025-07-26": { descricao: "Rede de Crianças Igreja", cor: "#FFD700" },
+
+  "2025-08-01": { descricao: "Reunião Liderança", cor: "#FFD700" },
+  "2025-08-02": { descricao: "Festival Gourmet - Jovens", cor: "#FFD700" },
+  "2025-08-15": { descricao: "Rede de Homens", cor: "#FFD700" },
+  "2025-08-30": { descricao: "Casamento Coletivo", cor: "#FFD700" },
+
+  "2025-09-05": { descricao: "Passeio Rede de Mulheres", cor: "#FFD700" },
+  "2025-09-12": { descricao: "Reunião Liderança", cor: "#FFD700" },
+  "2025-09-19": { descricao: "Rede de Homens", cor: "#FFD700" },
+  "2025-09-20": { descricao: "Seminário Kids Canaã", cor: "#FFD700" },
+  "2025-09-20": { descricao: "Seminário Casais", cor: "#FFD700" },
+
+  "2025-10-03": { descricao: "Reunião Liderança", cor: "#FFD700" },
+  "2025-10-18": { descricao: "Passeio Dia das Crianças", cor: "#FFD700" },
+  "2025-10-24": { descricao: "Confraternização Líderes Rede Criança", cor: "#FFD700" },
+  "2025-10-31": { descricao: "Culto Outubro Rosa", cor: "#FFD700" },
+
+  "2025-11-07": { descricao: "Seminário Rede de Homens", cor: "#FFD700" },
+  "2025-11-08": { descricao: "Seminário Rede de Homens", cor: "#FFD700" },
+  "2025-11-14": { descricao: "Reunião Liderança", cor: "#FFD700" },
+  "2025-11-15": { descricao: "Rede de Casais", cor: "#FFD700" },
+  "2025-11-15": { descricao: "Acampa Jovem", cor: "#FFD700" },
+  "2025-11-16": { descricao: "Acampa Jovem", cor: "#FFD700" },
+  "2025-11-20": { descricao: "Confraternização Rede de Mulheres - Liderança", cor: "#FFD700" },
+
+  "2025-12-05": { descricao: "Reunião Liderança", cor: "#FFD700" },
+  "2025-12-06": { descricao: "Rede de Crianças", cor: "#FFD700" },
+  "2025-12-20": { descricao: "Confraternização Liderança", cor: "#FFD700" },
+  "2025-12-25": { descricao: "Culto Natal", cor: "#FFD700" },
+  "2025-12-31": { descricao: "Culto Virada", cor: "#FFD700" },
+    };
+
+    let currentDate = new Date();
+
+    function updateCalendar() {
+      const weekContainer = document.getElementById("calendarWeek");
+      weekContainer.innerHTML = "";
+
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      document.getElementById("monthYear").innerText =
+        firstDay.toLocaleString("pt-BR", { month: "long", year: "numeric" });
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const date = new Date(year, month, d);
+        const dateString = date.toISOString().split("T")[0];
+
+        const dayEl = document.createElement("div");
+        dayEl.className = "day";
+
+        const number = document.createElement("div");
+        number.className = "number";
+        number.textContent = d;
+
+        dayEl.appendChild(number);
+
+        if (eventos[dateString]) {
+          dayEl.style.backgroundColor = eventos[dateString].cor;
+          const eventEl = document.createElement("div");
+          eventEl.className = "event";
+          eventEl.innerText = eventos[dateString].descricao;
+          dayEl.appendChild(eventEl);
+        }
+
+        weekContainer.appendChild(dayEl);
+      }
+    }
+
+    function changeMonth(delta) {
+      currentDate.setMonth(currentDate.getMonth() + delta);
+      updateCalendar();
+    }
+
+    updateCalendar();
+  </script>
+
+  <!-- PWA install -->
+  <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+      let installPromptEvent;
+
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        installPromptEvent = event;
+        document.getElementById("installBtn").style.display = "block";
+      });
+
+      window.addEventListener("appinstalled", () => {
+        document.getElementById("installBtn").style.display = "none";
+      });
+
+      document.getElementById("installBtn").addEventListener("click", () => {
+        if (installPromptEvent) {
+          installPromptEvent.prompt();
+          installPromptEvent.userChoice.then(() => {
+            installPromptEvent = null;
+            document.getElementById("installBtn").style.display = "none";
+          });
+        }
+      });
+    });
+  </script>
+
+  <!-- Service Worker -->
+  <script defer>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registrado com sucesso:', registration);
+          })
+          .catch(err => {
+            console.log('Falha no registro do ServiceWorker:', err);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
