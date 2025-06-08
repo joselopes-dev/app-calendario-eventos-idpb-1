@@ -47,6 +47,12 @@
       font-size: 0.9rem;
       padding: 10px;
     }
+    .day .weekday {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #555;
+      margin-bottom: 3px;
+    }
     .day .number {
       font-weight: bold;
       font-size: 1.2rem;
@@ -66,7 +72,7 @@
 </head>
 <body>
 
-     <button id="installBtn" style="z-index: 1; display: none; position: fixed; bottom: 20px; right: 20px; background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+  <button id="installBtn" style="z-index: 1; display: none; position: fixed; bottom: 20px; right: 20px; background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
     📲 Instalar App
   </button>
 
@@ -80,7 +86,7 @@
   </div>
 
   <script defer>
-     const eventos = {
+    const eventos = {
   "2025-04-18": { descricao:"Vigília - Casais", cor: "#FFD700"},
   "2025-04-23": { descricao: "Cinema Mulheres", cor: "#FFD700" },
   "2025-04-24": { descricao: "Oração Tabitas", cor: "#FFD700" },
@@ -162,10 +168,15 @@
         const dayEl = document.createElement("div");
         dayEl.className = "day";
 
+        const weekday = document.createElement("div");
+        weekday.className = "weekday";
+        weekday.textContent = date.toLocaleDateString("pt-BR", { weekday: "short" });
+
         const number = document.createElement("div");
         number.className = "number";
         number.textContent = d;
 
+        dayEl.appendChild(weekday);
         dayEl.appendChild(number);
 
         if (eventos[dateString]) {
