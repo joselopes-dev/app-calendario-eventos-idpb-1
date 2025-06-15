@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calendario-cache-v7';
+const CACHE_NAME = 'calendario-cache-v8';
 const OFFLINE_PAGE = '/index.html';
 const ASSETS = [
   '/',
